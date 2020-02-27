@@ -15,6 +15,15 @@ https://github.com/sameersbn/docker-squid#usage
 http://squid-web-proxy-cache.1019090.n4.nabble.com/using-clang-to-compile-squid-4-5-td4687235.html#a4687298
 ```
 
+## git credential.helper cache
+
+```bash
+git config --global credential.helper cache
+trapapa@lan-rk3399:~/playground/squid-docker$ git config --global credential.helper "cache --timeout=3600"
+```
+
+
+
 ## use docker in container
 
 ```bash
