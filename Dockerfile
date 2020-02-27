@@ -4,6 +4,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ENV SOURCEURL=http://www.squid-cache.org/Versions/v4/squid-4.8.tar.gz
 
+ENV PAGNAME=squid
+ENV PKGVERSION=4.8
+ENV ARCH=${BUILDARCH}
+
 ENV builddeps=" \
     build-essential \
     checkinstall \
@@ -50,7 +54,7 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
  && tar --strip=1 -xf squid-source.tar.gz \
  && ./configure --prefix=/usr \
         --localstatedir=/var \
-        --libexecdir=/usr/lib/squid \
+       --libexecdir=/usr/lib/squid \
         --datadir=/usr/share/squid \
         --sysconfdir=/etc/squid \
         --with-default-user=proxy \
@@ -83,9 +87,10 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
         --with-large-files \
         --enable-linux-netfilter \
         --enable-ssl --enable-ssl-crtd --with-openssl \
- && make -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) \
- && checkinstall -y -D --install=no --fstrans=no --requires="${requires}" \
-        --pkgname="squid"
+    && make -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) \
+    && checkinstall --default -D --install=no --fstrans=no --requires="${requires}" \
+        --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch="${BUILDARCH}"
+
 
 FROM debian:stretch-slim
 
@@ -93,7 +98,10 @@ label maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
+#COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
+
+COPY --from=builder /build/"${PKGNAME}_${PKGVERSION}_${BUILDARCH}.deb" /tmp/squid.deb
+
 
 RUN apt update \
  && apt -qy install libssl1.1 /tmp/squid.deb \

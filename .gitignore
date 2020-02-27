@@ -1,0 +1,7 @@
+readme2script.sh
+mk_self_sign_certificate.sh
+**/*pem
+**/*csr
+**/*key
+**/*srl
+**/*passphrase.txt

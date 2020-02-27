@@ -1,0 +1,2 @@
+subjectAltName=critical,DNS:lan-rk3399,IP:192.168.178.60,IP:127.0.0.1
+extendedKeyUsage = serverAuth
