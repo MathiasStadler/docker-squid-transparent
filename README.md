@@ -2,10 +2,10 @@
 
 # squid-docker-transparent
 
-> project based on other git project
-> all credits goes to 
-> https://linuxize.com/post/how-to-install-and-configure-squid-proxy-on-debian-10/
-> https://github.com/jacobalberty/squid-docker
+> - project based on other git project
+> - all credits goes to 
+> - https://linuxize.com/post/how-to-install-and-configure-squid-proxy-on-debian-10/
+> - https://github.com/jacobalberty/squid-docker
 
 
 ## source
