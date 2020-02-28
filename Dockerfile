@@ -18,27 +18,27 @@ ARG builddeps=" \
     openssl \
     "
 ARG requires=" \
-    libatomic1, \
-    libc6, \
-    libcap2, \
-    libcomerr2, \
-    libdb5.3, \
-    libdbi-perl, \
-    libecap3, \
-    libexpat1, \
-    libgcc1, \
-    libgnutls30, \
-    libgssapi-krb5-2, \
-    libkrb5-3, \
-    libldap-2.4-2, \
-    libltdl7, \
-    libnetfilter-conntrack3, \
-    libnettle6, \
-    libpam0g, \
-    libsasl2-2, \
-    libstdc++6, \
-    libxml2, \
-    netbase, \
+    libatomic1 \
+    libc6 \
+    libcap2 \
+    libcomerr2 \
+    libdb5.3 \
+    libdbi-perl \
+    libecap3 \
+    libexpat1 \
+    libgcc1 \
+    libgnutls30 \
+    libgssapi-krb5-2 \
+    libkrb5-3 \
+    libldap-2.4-2 \
+    libltdl7 \
+    libnetfilter-conntrack3 \
+    libnettle6 \
+    libpam0g \
+    libsasl2-2 \
+    libstdc++6 \
+    libxml2 \
+    netbase \
     openssl \
     "
 
