@@ -5,10 +5,22 @@
 
 ARG PKGNAME=squid
 ARG PKGVERSION=4.8
-ARG ARCH_TARGET=$ARCH
+ARG ARCH_TARGET=NO_SET
 ARG PKGRELEASE=1
 
 FROM debian:stretch as builder
+
+
+ARG PKGNAME
+ARG PKGVERSION
+ARG ARCH_TARGET
+ARG PKGRELEASE
+
+RUN echo $PKGNAME
+RUN echo $PKGVERSION
+RUN echo $ARCH_TARGET
+RUN echo $PKGRELEASE
+
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -96,11 +108,27 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
         --enable-linux-netfilter \
         --enable-ssl --enable-ssl-crtd --with-openssl \
     && make -j$(( $(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) * 4 / 3  )) \
-    && checkinstall --default -D --install=no --fstrans=no --requires="${requires}" \
-        --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch="${ARCH_TARGET}" --pkgrelease="${PKGRELEASE}"
+    && checkinstall --default -D --install=no \ 
+    --fstrans=no \
+    --requires="${requires}" \
+    --pkgname="${PKGNAME}" \ 
+    --pkgversion="${PKGVERSION}" \
+    --pkgarch="${ARCH_TARGET}" \ 
+    --pkgrelease="${PKGRELEASE}"
 
 
 FROM debian:stretch-slim
+
+ARG PKGNAME
+ARG PKGVERSION
+ARG ARCH_TARGET
+ARG PKGRELEASE
+
+RUN echo $PKGNAME
+RUN echo $PKGVERSION
+RUN echo $ARCH_TARGET
+RUN echo $PKGRELEASE
+
 
 label maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
