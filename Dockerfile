@@ -8,27 +8,7 @@ ARG PKGVERSION=4.8
 ARG ARCH_TARGET=NO_SET
 ARG PKGRELEASE=1
 
-FROM debian:stretch as builder
-
-
-ARG PKGNAME
-ARG PKGVERSION
-ARG ARCH_TARGET
-ARG PKGRELEASE
-
-RUN echo $PKGNAME
-RUN echo $PKGVERSION
-RUN echo $ARCH_TARGET
-RUN echo $PKGRELEASE
-
-
-ARG DEBIAN_FRONTEND=noninteractive
-
-ENV SOURCEURL=http://www.squid-cache.org/Versions/v4/squid-4.8.tar.gz
-
-
-
-ENV builddeps=" \
+ARG builddeps=" \
     build-essential \
     checkinstall \
     curl \
@@ -37,7 +17,7 @@ ENV builddeps=" \
     libssl-dev \
     openssl \
     "
-ENV requires=" \
+ARG requires=" \
     libatomic1, \
     libc6, \
     libcap2, \
@@ -61,6 +41,33 @@ ENV requires=" \
     netbase, \
     openssl \
     "
+
+
+FROM debian:stretch as builder
+
+
+ARG PKGNAME
+ARG PKGVERSION
+ARG ARCH_TARGET
+ARG PKGRELEASE
+ARG builddeps
+ARG requires
+
+RUN echo $PKGNAME
+RUN echo $PKGVERSION
+RUN echo $ARCH_TARGET
+RUN echo $PKGRELEASE
+RUN echo $builddeps
+RUN echo $requires
+
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ENV SOURCEURL=http://www.squid-cache.org/Versions/v4/squid-4.8.tar.gz
+
+
+
+
 
 RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/source.list \
  && echo "deb-src http://deb.debian.org/debian stretch-updates main" >> /etc/apt/sources.list.d/source.list \
@@ -123,11 +130,15 @@ ARG PKGNAME
 ARG PKGVERSION
 ARG ARCH_TARGET
 ARG PKGRELEASE
+ARG builddeps
+ARG requires
 
 RUN echo $PKGNAME
 RUN echo $PKGVERSION
 RUN echo $ARCH_TARGET
 RUN echo $PKGRELEASE
+RUN echo $builddeps
+RUN echo $requires
 
 
 label maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
@@ -138,6 +149,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 COPY --from=builder /build/"${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_${ARCH_TARGET}.deb" /tmp/squid.deb
 
+
+RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/source.list \
+ && echo "deb-src http://deb.debian.org/debian stretch-updates main" >> /etc/apt/sources.list.d/source.list \
+ && echo "deb-src http://security.debian.org stretch/updates main" >> /etc/apt/sources.list.d/source.list \
+ && apt-get -qy update \
+ && apt-get -qy install ${builddeps} \ 
+ && apt-get -qy install ${requires} 
 
 RUN apt update \
  && apt -qy install libssl1.1 /tmp/squid.deb \
