@@ -1,12 +1,20 @@
+
+# from here multi stage global arg
+# https://github.com/moby/moby/issues/37345
+
+
+ARG PKGNAME=squid
+ARG PKGVERSION=4.8
+ARG ARCH_TARGET=$ARCH
+ARG PKGRELEASE=1
+
 FROM debian:stretch as builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV SOURCEURL=http://www.squid-cache.org/Versions/v4/squid-4.8.tar.gz
 
-ENV PAGNAME=squid
-ENV PKGVERSION=4.8
-ENV ARCH=${BUILDARCH}
+
 
 ENV builddeps=" \
     build-essential \
@@ -87,9 +95,9 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
         --with-large-files \
         --enable-linux-netfilter \
         --enable-ssl --enable-ssl-crtd --with-openssl \
-    && make -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) \
+    && make -j$(( $(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) * 4 / 3  )) \
     && checkinstall --default -D --install=no --fstrans=no --requires="${requires}" \
-        --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch="${BUILDARCH}"
+        --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch="${ARCH_TARGET}" --pkgrelease="${PKGRELEASE}"
 
 
 FROM debian:stretch-slim
@@ -100,7 +108,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 #COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
 
-COPY --from=builder /build/"${PKGNAME}_${PKGVERSION}_${BUILDARCH}.deb" /tmp/squid.deb
+COPY --from=builder /build/"${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_${ARCH_TARGET}.deb" /tmp/squid.deb
 
 
 RUN apt update \
