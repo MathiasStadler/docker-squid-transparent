@@ -83,10 +83,11 @@ RUN echo "deb-src http://deb.debian.org/debian buster main" > /etc/apt/sources.l
         --with-filedescriptors=65536 \
         --with-large-files \
         --enable-linux-netfilter \
-        --enable-ssl --enable-ssl-crtd --with-openssl \
- && make -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) \
- && checkinstall -y -D --install=no --fstrans=no --requires="${requires}" \
-        --pkgname="squid"
+        --enable-ssl --enable-ssl-crtd --with-openssl 
+
+ # && make -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) \
+ # && checkinstall -y -D --install=no --fstrans=no --requires="${requires}" \
+ #       --pkgname="squid"
 
 FROM debian:buster-slim
 

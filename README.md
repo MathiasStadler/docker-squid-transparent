@@ -13,6 +13,9 @@
 ```txt
 https://github.com/sameersbn/docker-squid#usage
 http://squid-web-proxy-cache.1019090.n4.nabble.com/using-clang-to-compile-squid-4-5-td4687235.html#a4687298
+
+# debian build
+https://docs.diladele.com/howtos/build_squid_ubuntu16/build_squid.html
 ```
 
 ## git credential.helper cache

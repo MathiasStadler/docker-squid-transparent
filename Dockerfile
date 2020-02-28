@@ -4,7 +4,7 @@
 
 
 ARG PKGNAME=squid
-ARG PKGVERSION=4.8
+ARG PKGVERSION=4.10
 ARG ARCH_TARGET=NOSET
 ARG PKGRELEASE=1
 
@@ -17,6 +17,32 @@ ARG builddeps=" \
     libssl-dev \
     openssl \
     "
+ARG requires_checkinstall=" \
+    libatomic1, \
+    libc6, \
+    libcap2, \
+    libcomerr2, \
+    libdb5.3, \
+    libdbi-perl, \
+    libecap3, \
+    libexpat1, \
+    libgcc1, \
+    libgnutls30, \
+    libgssapi-krb5-2, \
+    libkrb5-3, \
+    libldap-2.4-2, \
+    libltdl7, \
+    libnetfilter-conntrack3, \
+    libnettle6, \
+    libpam0g, \
+    libsasl2-2, \
+    libstdc++6, \
+    libxml2, \
+    netbase, \
+    openssl \
+    "
+
+
 ARG requires=" \
     libatomic1 \
     libc6 \
@@ -52,6 +78,7 @@ ARG ARCH_TARGET
 ARG PKGRELEASE
 ARG builddeps
 ARG requires
+ARG requires_checkinstall
 
 RUN echo $PKGNAME
 RUN echo $PKGVERSION
@@ -59,11 +86,12 @@ RUN echo $ARCH_TARGET
 RUN echo $PKGRELEASE
 RUN echo $builddeps
 RUN echo $requires
+RUN echo requires_checkinstall
 
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV SOURCEURL=http://www.squid-cache.org/Versions/v4/squid-4.8.tar.gz
+ENV SOURCEURL=http://www.squid-cache.org/Versions/v4/squid-4.10.tar.gz
 
 
 
@@ -115,13 +143,7 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
         --enable-linux-netfilter \
         --enable-ssl --enable-ssl-crtd --with-openssl \
     && make -j$(( $(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) * 4 / 3  )) \
-    && checkinstall --default -D --install=no \ 
-    --fstrans=no \
-    --requires="${requires}" \
-    --pkgname="${PKGNAME}" \ 
-    --pkgversion="${PKGVERSION}" \
-    --pkgarch="${ARCH_TARGET}" \ 
-    --pkgrelease="${PKGRELEASE}"
+    && checkinstall --default -D --install=no --fstrans=no --requires="${requires_checkinstall}" --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch $(dpkg --print-architecture) --pkgrelease="${PKGRELEASE}"
 
 
 FROM debian:stretch-slim
@@ -147,7 +169,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 #COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
 
-COPY --from=builder /build/"${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_${ARCH_TARGET}.deb" /tmp/squid.deb
+COPY --from=builder /build/"${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_$(dpkg --print-architecture).deb" /tmp/squid.deb
 
 
 RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/source.list \
