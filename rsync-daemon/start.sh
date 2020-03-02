@@ -19,12 +19,12 @@ FROM alpine
 VOLUME /opt/gdal-docker-cache
 EXPOSE 23985
 RUN apk add --no-cache rsync \
-        && mkdir -p /opt/gdal-docker-cache \
-        && echo "[gdal-docker-cache]" > /etc/rsyncd.conf \
-        && echo "path = /opt/gdal-docker-cache" >> /etc/rsyncd.conf  \
-        && echo "hosts allow = *" >> /etc/rsyncd.conf \
-        && echo "read only = false" >> /etc/rsyncd.conf \
-        && echo "use chroot = false" >> /etc/rsyncd.conf
+            && mkdir -p /opt/gdal-docker-cache \
+            && echo "[gdal-docker-cache]" > /etc/rsyncd.conf \
+            && echo "path = /opt/gdal-docker-cache" >> /etc/rsyncd.conf  \
+            && echo "hosts allow = *" >> /etc/rsyncd.conf \
+            && echo "read only = false" >> /etc/rsyncd.conf \
+            && echo "use chroot = false" >> /etc/rsyncd.conf
 CMD rsync --daemon --port 23985 && while sleep 1; do /bin/true; done
 EOF
 
