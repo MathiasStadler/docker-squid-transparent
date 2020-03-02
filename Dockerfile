@@ -1,7 +1,5 @@
-
 # from here multi stage global arg
 # https://github.com/moby/moby/issues/37345
-
 
 ARG PKGNAME=squid
 ARG PKGVERSION=4.10
@@ -41,8 +39,6 @@ ARG requires_checkinstall=" \
     netbase, \
     openssl \
     "
-
-
 ARG requires=" \
     libatomic1 \
     libc6 \
@@ -67,10 +63,7 @@ ARG requires=" \
     netbase \
     openssl \
     "
-
-
 FROM debian:stretch as builder
-
 
 ARG PKGNAME
 ARG PKGVERSION
@@ -88,14 +81,9 @@ RUN echo $builddeps
 RUN echo $requires
 RUN echo requires_checkinstall
 
-
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV SOURCEURL=http://www.squid-cache.org/Versions/v4/squid-4.10.tar.gz
-
-
-
-
 
 RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/source.list \
  && echo "deb-src http://deb.debian.org/debian stretch-updates main" >> /etc/apt/sources.list.d/source.list \
@@ -145,7 +133,6 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
     && make -j$(( $(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) * 4 / 3  )) \
     && checkinstall --default -D --install=no --fstrans=no --requires="${requires_checkinstallhtop}" --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch $(dpkg --print-architecture) --pkgrelease="${PKGRELEASE}"
 
-
 FROM debian:stretch-slim
 
 ARG PKGNAME
@@ -162,7 +149,6 @@ RUN echo $PKGRELEASE
 RUN echo $builddeps
 RUN echo $requires
 
-
 LABEL maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -170,7 +156,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 #COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
 
 COPY --from=builder "/build/${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_$(dpkg --print-architecture).deb" "/tmp/squid.deb"
-
 
 RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/source.list \
  && echo "deb-src http://deb.debian.org/debian stretch-updates main" >> /etc/apt/sources.list.d/source.list \
