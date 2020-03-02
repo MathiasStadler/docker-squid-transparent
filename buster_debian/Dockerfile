@@ -24,6 +24,10 @@ apt-get -y install \
 
 FROM build_env AS squid_install
 
+ARG DEBIAN_FRONTEND=noninteractive
+
+# install ccache
+RUN  apt-get -qy update && apt-get -y install ccache
 
 # copy the patches to the working folder
 COPY rules.patch build/squid/rules.patch
@@ -32,6 +36,9 @@ COPY rules.patch build/squid/rules.patch
 # @TODO old RUN source squid.ver
 ENV SQUID_VER="4.10"
 ENV SQUID_PKG="${SQUID_VER}-1"
+
+ENV MAKEFLAGS='CC=ccache\ gcc'
+
 
 # decend into working directory
 RUN cd build/squid
@@ -49,13 +56,21 @@ RUN dpkg-source -x squid_${SQUID_PKG}.dsc
 RUN patch squid-${SQUID_VER}/debian/rules < build/squid/rules.patch
 
 # build the package
-RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc
+# @TODO to test RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc
+RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo)
+
+
+FROM debian:buster-slim AS squid-runcontainer
+
+COPY --from=squid_install /build/squid-common_${SQUID_PKG}_all.deb /tmp
+COPY --from=squid_install /build/squid_${SQUID_PKG}_$(dpkg --print-architecture).deb /tmp
+COPY --from=squid_install /build/squidclient_${SQUID_PKG}_$(dpkg --print-architecture).deb  /tmp
+
+
 
 # install squid packages
 RUN apt-get install squid-langpack && \
 dpkg --install squid-common_${SQUID_PKG}_all.deb && \
-dpkg --install squid_${SQUID_PKG}_amd64.deb && \
-dpkg --install squidclient_${SQUID_PKG}_amd64.deb 
+dpkg --install squid_${SQUID_PKG}_$(dpkg --print-architecture).deb && \
+dpkg --install squidclient_${SQUID_PKG}_$(dpkg --print-architecture).deb 
 
-# and revert
-RUN popd

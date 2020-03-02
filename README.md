@@ -174,3 +174,21 @@ dependencies that are specific to your setup without having to modify the image 
 
 Simply put your squid configuration in /conf with squid.conf located there as well.
 
+
+## ccache
+
+```txt
+https://wiki.debian.org/DevelopmentPage
+https://stackoverflow.com/questions/39650056/using-ccache-when-building-inside-of-docker
+
+# ccache container
+https://stackoverflow.com/questions/39650056/using-ccache-when-building-inside-of-docker
+```
+
+
+```bash
+docker create -v /mnt/ccache:/ccache --name ccache debian:buster-slim
+
+
+
+```
