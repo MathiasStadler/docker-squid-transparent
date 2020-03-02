@@ -183,12 +183,16 @@ https://stackoverflow.com/questions/39650056/using-ccache-when-building-inside-o
 
 # ccache container
 https://stackoverflow.com/questions/39650056/using-ccache-when-building-inside-of-docker
-```
 
+#using-ccache-in-automated-builds-on-docker-cloud
+https://stackoverflow.com/questions/45715746/using-ccache-in-automated-builds-on-docker-cloud
+
+# rsync during build
+http://erouault.blogspot.com/2019/05/incremental-docker-builds-using-ccache.html
+https://github.com/OSGeo/gdal/blob/26342f736f38fd5c7ba8b63fcfe9d29648d67035/gdal/docker/util.sh#L223:L269
+
+```
 
 ```bash
 docker create -v /mnt/ccache:/ccache --name ccache debian:buster-slim
-
-
-
 ```
