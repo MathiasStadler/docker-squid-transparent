@@ -143,7 +143,7 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
         --enable-linux-netfilter \
         --enable-ssl --enable-ssl-crtd --with-openssl \
     && make -j$(( $(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo) * 4 / 3  )) \
-    && checkinstall --default -D --install=no --fstrans=no --requires="${requires_checkinstall}" --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch $(dpkg --print-architecture) --pkgrelease="${PKGRELEASE}"
+    && checkinstall --default -D --install=no --fstrans=no --requires="${requires_checkinstallhtop}" --pkgname="${PKGNAME}" --pkgversion="${PKGVERSION}" --pkgarch $(dpkg --print-architecture) --pkgrelease="${PKGRELEASE}"
 
 
 FROM debian:stretch-slim
@@ -163,13 +163,13 @@ RUN echo $builddeps
 RUN echo $requires
 
 
-label maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
+LABEL maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 #COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
 
-COPY --from=builder /build/"${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_$(dpkg --print-architecture).deb" /tmp/squid.deb
+COPY --from=builder "/build/${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_$(dpkg --print-architecture).deb" "/tmp/squid.deb"
 
 
 RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/source.list \
