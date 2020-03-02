@@ -2,13 +2,12 @@
 
 set -e
 
-RSYNC_DAEMON_CONTAINER=gdal_rsync_daemon
-BUILD_NETWORK=docker_build_gdal
-HOST_CACHE_DIR="$HOME/gdal-docker-cache"
+source ./rsync-daemon.env
 
-mkdir -p "${HOST_CACHE_DIR}/${BASE_IMAGE_NAME}/proj"
-mkdir -p "${HOST_CACHE_DIR}/${BASE_IMAGE_NAME}/gdal"
-mkdir -p "${HOST_CACHE_DIR}/${BASE_IMAGE_NAME}/spatialite"
+# mkdir -p "${HOST_CACHE_DIR}/${BASE_IMAGE_NAME}/proj"
+# mkdir -p "${HOST_CACHE_DIR}/${BASE_IMAGE_NAME}/gdal"
+# mkdir -p "${HOST_CACHE_DIR}/${BASE_IMAGE_NAME}/spatialite"
+mkdir -p "${HOST_CACHE_DIR}/${BASE_IMAGE_NAME}/ccache"
 
 # Start a Docker container that has a rsync daemon, mounting HOST_CACHE_DIR
 if ! docker ps | grep "${RSYNC_DAEMON_CONTAINER}"; then
@@ -43,3 +42,6 @@ EOF
         "${RSYNC_DAEMON_IMAGE}"
 
 fi
+
+docker ps
+docker network list

@@ -2,6 +2,8 @@
 
 set -e
 
+source ../rsync-daemon.env
+
 RSYNC_REMOTE="rsync://${RSYNC_DAEMON_CONTAINER}:23985/gdal-docker-cache/${BASE_IMAGE_NAME}"
 
 BUILD_ARGS=(
@@ -12,28 +14,32 @@ BUILD_ARGS=(
     "--build-arg" "RSYNC_REMOTE=${RSYNC_REMOTE}"
 )
 
-echo  "${BUILD_ARGS[@]}"
+# echo  "${BUILD_ARGS[@]}"
 
-docker build  --network "${BUILD_NETWORK}" --target builder \
-        -t "test-rsync-daemon"  <<EOF
+docker build  --network "${BUILD_NETWORK}" --no-cache \
+        -t "test-rsync-daemon" - <<EOF
 FROM alpine
-RUN apk add --nocache rsync ccache
+RUN apk add --no-cache rsync ccache
 
 ARG RSYNC_REMOTE
 ARG GDAL_VERSION=master
 RUN if test "${RSYNC_REMOTE}" != ""; then \
         echo "Downloading cache..."; \
-        rsync -ra ${RSYNC_REMOTE}/gdal/ $HOME/; \
+        rsync -ra ${RSYNC_REMOTE}/ccache/ $HOME/; \
         export CC="ccache gcc"; \
         export CXX="ccache g++"; \
         ccache -M 1G; \
-    fi \
+        pwd $HOME; \
+        ls -l $HOME; \
+    fi
     # omitted: download source tree depending on GDAL_VERSION
     # omitted: build
-    && if test "${RSYNC_REMOTE}" != ""; then \
+RUN mkdir -p $HOME/.ccache
+RUN touch $HOME/.ccache/testfile1    
+RUN if test "${RSYNC_REMOTE}" != ""; then \
         ccache -s; \
         echo "Uploading cache..."; \
-        rsync -ra --delete $HOME/.ccache ${RSYNC_REMOTE}/gdal/; \
+        rsync -ra --delete $HOME/.ccache ${RSYNC_REMOTE}/ccache/; \
         rm -rf $HOME/.ccache; \
     fi
-    EOF
+EOF
