@@ -240,3 +240,11 @@ sed -n -e 's/^\(.*\)\(stalled: \)\(.*\)$/\3\2\1/p'
 ```
 
 https://www.gnu.org/software/sed/manual/html_node/Multiline-techniques.html
+
+
+
+## buildkit
+
+```txt
+https://ownyourbits.com/2019/05/13/building-docker-containers-in-2019/
+```

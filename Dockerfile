@@ -5,6 +5,7 @@ ARG PKGNAME=squid
 ARG PKGVERSION=4.10
 ARG ARCH_TARGET=NOSET
 ARG PKGRELEASE=1
+ARG ARCH
 
 ARG builddeps=" \
     build-essential \
@@ -65,6 +66,7 @@ ARG requires=" \
     "
 FROM debian:stretch as builder
 
+ARG ARCH
 ARG PKGNAME
 ARG PKGVERSION
 ARG ARCH_TARGET
@@ -135,6 +137,7 @@ RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.
 
 FROM debian:stretch-slim
 
+ARG ARCH
 ARG PKGNAME
 ARG PKGVERSION
 ARG ARCH_TARGET
@@ -153,9 +156,11 @@ LABEL maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-#COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
+# @TODO old COPY --from=builder /build/squid_0-1_amd64.deb /tmp/squid.deb
 
-COPY --from=builder "/build/${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_$(dpkg --print-architecture).deb" "/tmp/squid.deb"
+# @TODO old COPY --from=builder /build/${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_$(dpkg --print-architecture).deb /tmp/squid.deb
+COPY --from=builder /build/${PKGNAME}_${PKGVERSION}-${PKGRELEASE}_${ARCH}.deb /tmp/squid.deb
+
 
 RUN echo "deb-src http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/source.list \
  && echo "deb-src http://deb.debian.org/debian stretch-updates main" >> /etc/apt/sources.list.d/source.list \
