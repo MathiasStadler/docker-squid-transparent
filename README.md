@@ -196,3 +196,47 @@ https://github.com/OSGeo/gdal/blob/26342f736f38fd5c7ba8b63fcfe9d29648d67035/gdal
 ```bash
 docker create -v /mnt/ccache:/ccache --name ccache debian:buster-slim
 ```
+
+
+## grep and awk
+
+```bash
+#get the word after from
+grep -oP "from\s+\K\w+" Dockerfile 
+cat Dockerfile | grep ^FROM.*$ | cut -d " " -f 2
+# get the 
+
+```
+
+## multiline match
+
+```bash
+expr="/^\`\`\`bash ${SCRIPT}/,/^\`\`\`/{ /^\`\`\`bash.*$/d; /^\`\`\`$/d; p; }"
+
+#between from from
+cat Dockerfile |sed -n -e '/^FROM.*/,/^FROM.*$/{ /^FROM:*$/d; /^FROM.*$/d; p; }'
+
+cat Dockerfile |sed -n -e '/^FROM.*/,/^FROM.*$/{ /^FROM:*$/g; /^FROM.*$/d; p; }'
+
+cat Dockerfile |sed -n -e '/^FROM.*/,/^FROM.*$/{ /^FROM:*$/H; /^FROM.*$/H; p; }'
+
+cat Dockerfile |sed -n -e '/^FROM.*as.*env.*/,/^FROM.*$/{  /^FROM.*$/H; p; }'
+
+# between FROM FROM
+cat Dockerfile |sed '/^FROM.*$/,/^FROM.*$/!d;//d' Dockerfile 
+
+
+
+```
+
+## sed tutorial
+
+```txt
+https://www.grymoire.com/Unix/Sed.html#uh-51
+```
+
+sed -n -e 's/^\(.*\)\(stalled: \)\(.*\)$/\3\2\1/p'
+
+```
+
+https://www.gnu.org/software/sed/manual/html_node/Multiline-techniques.html
