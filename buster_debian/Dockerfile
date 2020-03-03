@@ -1,4 +1,10 @@
+# global
+
+ARG ARCH
+
 FROM debian:buster as build_env
+
+ARG ARCH
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -62,9 +68,15 @@ RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^
 
 FROM debian:buster-slim AS squid-runcontainer
 
-COPY --from=squid_install /build/squid-common_${SQUID_PKG}_all.deb /tmp
-COPY --from=squid_install /build/squid_${SQUID_PKG}_$(dpkg --print-architecture).deb /tmp
-COPY --from=squid_install /build/squidclient_${SQUID_PKG}_$(dpkg --print-architecture).deb  /tmp
+ARG ARCH
+
+ENV SQUID_VER="4.10"
+ENV SQUID_PKG="${SQUID_VER}-1"
+
+
+COPY --from=squid_install /squid-common_${SQUID_PKG}_all.deb /tmp
+COPY --from=squid_install /squid_${SQUID_PKG}_$(dpkg --print-architecture).deb /tmp
+COPY --from=squid_install /squidclient_${SQUID_PKG}_${ARCH}.deb  /tmp
 
 
 
