@@ -66,6 +66,8 @@ ARG requires=" \
     "
 FROM debian:stretch as builder
 
+
+
 ARG ARCH
 ARG PKGNAME
 ARG PKGVERSION
@@ -82,6 +84,15 @@ RUN echo $PKGRELEASE
 RUN echo $builddeps
 RUN echo $requires
 RUN echo requires_checkinstall
+
+# from here
+#  https://stackoverflow.com/questions/57734271/how-to-verify-build-args-is-set-properly-in-dockerfile
+RUN if [  -z $ARCH ];then \
+>&2 echo  "\n****************Warning!!!!*************\n"; \
+>&2 echo "ARCH seems empty!" ;\
+false; \
+fi
+
 
 ARG DEBIAN_FRONTEND=noninteractive
 
