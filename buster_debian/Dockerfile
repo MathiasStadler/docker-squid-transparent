@@ -6,6 +6,14 @@ FROM debian:buster as build_env
 
 ARG ARCH
 
+# from here
+#  https://stackoverflow.com/questions/57734271/how-to-verify-build-args-is-set-properly-in-dockerfile
+RUN if [  -z $ARCH ];then \
+>&2 echo  "\n****************Warning!!!!*************\n"; \
+>&2 echo "ARCH seems empty!" ;\
+false; \
+fi
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN  apt-get -qy update && \
@@ -29,6 +37,15 @@ apt-get -y install \
 
 
 FROM build_env AS squid_install
+
+ARG ARCH
+# from here
+#  https://stackoverflow.com/questions/57734271/how-to-verify-build-args-is-set-properly-in-dockerfile
+RUN if [  -z $ARCH ];then \
+>&2 echo  "\n****************Warning!!!!*************\n"; \
+>&2 echo "ARCH seems empty!" ;\
+false; \
+fi
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -69,13 +86,20 @@ RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^
 FROM debian:buster-slim AS squid-runcontainer
 
 ARG ARCH
+# from here
+#  https://stackoverflow.com/questions/57734271/how-to-verify-build-args-is-set-properly-in-dockerfile
+RUN if [  -z $ARCH ];then \
+>&2 echo  "\n****************Warning!!!!*************\n"; \
+>&2 echo "ARCH seems empty!" ;\
+false; \
+fi
 
 ENV SQUID_VER="4.10"
 ENV SQUID_PKG="${SQUID_VER}-1"
 
 
 COPY --from=squid_install /squid-common_${SQUID_PKG}_all.deb /tmp
-COPY --from=squid_install /squid_${SQUID_PKG}_$(dpkg --print-architecture).deb /tmp
+COPY --from=squid_install /squid_${SQUID_PKG}_${ARCH}.deb /tmp
 COPY --from=squid_install /squidclient_${SQUID_PKG}_${ARCH}.deb  /tmp
 
 
@@ -83,6 +107,6 @@ COPY --from=squid_install /squidclient_${SQUID_PKG}_${ARCH}.deb  /tmp
 # install squid packages
 RUN apt-get install squid-langpack && \
 dpkg --install squid-common_${SQUID_PKG}_all.deb && \
-dpkg --install squid_${SQUID_PKG}_$(dpkg --print-architecture).deb && \
-dpkg --install squidclient_${SQUID_PKG}_$(dpkg --print-architecture).deb 
+dpkg --install squid_${SQUID_PKG}_${ARCH}.deb && \
+dpkg --install squidclient_${SQUID_PKG}_${ARCH}.deb 
 
