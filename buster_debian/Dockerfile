@@ -105,8 +105,8 @@ COPY --from=squid_install /squidclient_${SQUID_PKG}_${ARCH}.deb  /tmp
 
 
 # install squid packages
-RUN apt-get install squid-langpack && \
-dpkg --install squid-common_${SQUID_PKG}_all.deb && \
-dpkg --install squid_${SQUID_PKG}_${ARCH}.deb && \
-dpkg --install squidclient_${SQUID_PKG}_${ARCH}.deb 
+RUN apt-get update && apt-get install squid-langpack
+RUN dpkg --install /tmp/squid-common_${SQUID_PKG}_all.deb 
+RUN dpkg --install /tmp/squid_${SQUID_PKG}_${ARCH}.deb 
+RUN dpkg --install /tmp/squidclient_${SQUID_PKG}_${ARCH}.deb 
 
