@@ -252,4 +252,7 @@ https://ownyourbits.com/2019/05/13/building-docker-containers-in-2019/
 
 
 ## buildx
-export docker_buildkit=1; docker build --no-cache--build-arg ARCH=$ARCH .
+
+```bash
+export docker_buildkit=1; docker build --no-cache --build-arg ARCH=$ARCH .
+```

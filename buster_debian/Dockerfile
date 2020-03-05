@@ -105,7 +105,24 @@ COPY --from=squid_install /squidclient_${SQUID_PKG}_${ARCH}.deb  /tmp
 
 
 # install squid packages
-RUN apt-get update && apt-get install squid-langpack
+RUN apt-get update \
+&& apt-get -y install \
+    libcppunit-dev \
+    libsasl2-dev \
+    libxml2-dev \
+    libkrb5-dev \
+    libdb-dev \
+    libnetfilter-conntrack-dev \
+    libexpat1-dev \
+    libcap2-dev \
+    libldap2-dev \
+    libpam0g-dev \
+    libgnutls28-dev \
+    libssl-dev \
+    libdbi-perl \
+    libecap3 \
+    libecap3-dev \
+&& apt-get install squid-langpack
 RUN dpkg --install /tmp/squid-common_${SQUID_PKG}_all.deb 
 RUN dpkg --install /tmp/squid_${SQUID_PKG}_${ARCH}.deb 
 RUN dpkg --install /tmp/squidclient_${SQUID_PKG}_${ARCH}.deb 
