@@ -122,6 +122,9 @@ RUN apt-get update \
     libdbi-perl \
     libecap3 \
     libecap3-dev \
+    libltdl7 \
+    logrotate \
+    lsb-base \
 && apt-get install squid-langpack
 RUN dpkg --install /tmp/squid-common_${SQUID_PKG}_all.deb 
 RUN dpkg --install /tmp/squid_${SQUID_PKG}_${ARCH}.deb 
