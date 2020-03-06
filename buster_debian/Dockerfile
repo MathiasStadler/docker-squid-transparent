@@ -153,3 +153,7 @@ RUN dpkg --install /tmp/squid-common_${SQUID_PKG}_all.deb
 RUN dpkg --install /tmp/squid_${SQUID_PKG}_${ARCH}.deb 
 RUN dpkg --install /tmp/squidclient_${SQUID_PKG}_${ARCH}.deb 
 
+RUN rm /tmp/*dep
+
+
+
