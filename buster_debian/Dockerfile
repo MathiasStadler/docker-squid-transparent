@@ -66,10 +66,17 @@ ENV SQUID_PKG="${SQUID_VER}-1"
 RUN cd build/squid
 
 # get squid from debian experimental
-RUN wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_PKG}.dsc && \
-wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_VER}.orig.tar.xz && \
-wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_VER}.orig.tar.xz.asc && \
-wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_PKG}.debian.tar.xz
+# RUN wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_PKG}.dsc && \
+# wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_VER}.orig.tar.xz && \
+# wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_VER}.orig.tar.xz.asc && \
+# wget http://http.debian.net/debian/pool/main/s/squid/squid_${SQUID_PKG}.debian.tar.xz
+
+COPY squid_${SQUID_PKG}.dsc build/squid
+COPY squid_${SQUID_VER}.orig.tar.xz  build/squid
+COPY squid_${SQUID_VER}.orig.tar.xz.asc  build/squid
+COPY squid_${SQUID_PKG}.debian.tar.xz  build/squid
+
+RUN ls -l squid*
 
 # unpack the source package
 RUN dpkg-source -x squid_${SQUID_PKG}.dsc
