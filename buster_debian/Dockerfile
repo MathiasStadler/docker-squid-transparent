@@ -10,15 +10,26 @@ ARG ARCH
 #  https://stackoverflow.com/questions/57734271/how-to-verify-build-args-is-set-properly-in-dockerfile
 RUN if [  -z $ARCH ];then \
 >&2 echo  "\n****************Warning!!!!*************\n"; \
->&2 echo "ARCH seems empty!" ;\
+>&2 echo "--build-arg ARCH= seems empty!" ;\
 false; \
 fi
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN  apt-get -qy update && \
-apt-get install -y -qq --no-install-recommends ed devscripts build-essential fakeroot cdbs debhelper dh-apparmor dh-autoreconf wget curl && \
 apt-get install -y -qq --no-install-recommends \
+    ed \
+    devscripts \
+    build-essential \
+    fakeroot \
+    cdbs \
+    debhelper \
+    dh-apparmor \
+    dh-autoreconf \
+    wget \ 
+    curl \
+    debian-keyring \
+&& apt-get install -y -qq --no-install-recommends \
     libcppunit-dev \
     libsasl2-dev \
     libxml2-dev \
@@ -33,7 +44,10 @@ apt-get install -y -qq --no-install-recommends \
     libssl-dev \
     libdbi-perl \
     libecap3 \
-    libecap3-dev
+    libecap3-dev \
+    libltdl7 \
+    logrotate \
+    lsb-base 
 
 FROM build_env AS squid_install
 
@@ -76,10 +90,12 @@ COPY squid_${SQUID_VER}.orig.tar.xz  build/squid
 COPY squid_${SQUID_VER}.orig.tar.xz.asc  build/squid
 COPY squid_${SQUID_PKG}.debian.tar.xz  build/squid
 
-RUN ls -l squid*
+RUN ls -l build/squid
+RUN cd build/squid
+RUN pwd
 
 # unpack the source package
-RUN dpkg-source -x squid_${SQUID_PKG}.dsc
+RUN dpkg-source -x build/squid/squid_${SQUID_PKG}.dsc
 
 # modify configure options in debian/rules, add --enable-ssl --enable-ssl-crtd
 RUN patch squid-${SQUID_VER}/debian/rules < build/squid/rules.patch
@@ -88,7 +104,6 @@ RUN patch squid-${SQUID_VER}/debian/rules < build/squid/rules.patch
 # @TODO to test RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc
 RUN cd squid-${SQUID_VER} 
 RUN dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo)
-
 
 FROM debian:buster-slim AS squid-runcontainer
 
