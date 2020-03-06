@@ -47,7 +47,9 @@ apt-get install -y -qq --no-install-recommends \
     libecap3-dev \
     libltdl7 \
     logrotate \
-    lsb-base 
+    lsb-base \
+    libltdl-dev \
+    lsb-release
 
 FROM build_env AS squid_install
 
@@ -101,9 +103,9 @@ RUN dpkg-source -x build/squid/squid_${SQUID_PKG}.dsc
 RUN patch squid-${SQUID_VER}/debian/rules < build/squid/rules.patch
 
 # build the package
-# @TODO to test RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc
-RUN cd squid-${SQUID_VER} 
-RUN dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo)
+RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc
+# RUN cd squid-${SQUID_VER} 
+# RUN dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo)
 
 FROM debian:buster-slim AS squid-runcontainer
 
