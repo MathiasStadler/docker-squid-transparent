@@ -17,8 +17,8 @@ fi
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN  apt-get -qy update && \
-apt-get -y install ed devscripts build-essential fakeroot cdbs debhelper dh-apparmor dh-autoreconf wget curl && \
-apt-get -y install \
+apt-get install -y -qq --no-install-recommends ed devscripts build-essential fakeroot cdbs debhelper dh-apparmor dh-autoreconf wget curl && \
+apt-get install -y -qq --no-install-recommends \
     libcppunit-dev \
     libsasl2-dev \
     libxml2-dev \
@@ -35,7 +35,6 @@ apt-get -y install \
     libecap3 \
     libecap3-dev
 
-
 FROM build_env AS squid_install
 
 ARG ARCH
@@ -49,8 +48,8 @@ fi
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# install ccache
-RUN  apt-get -qy update && apt-get -y install ccache
+# @TODO old install ccache
+# RUN  apt-get -qy update && apt-get -y -qq install ccache
 
 # copy the patches to the working folder
 COPY rules.patch build/squid/rules.patch
@@ -60,8 +59,8 @@ COPY rules.patch build/squid/rules.patch
 ENV SQUID_VER="4.10"
 ENV SQUID_PKG="${SQUID_VER}-1"
 
-ENV MAKEFLAGS='CC=ccache\ gcc'
-
+# @TDDO old
+# ENV MAKEFLAGS='CC=ccache\ gcc'
 
 # decend into working directory
 RUN cd build/squid
@@ -80,7 +79,8 @@ RUN patch squid-${SQUID_VER}/debian/rules < build/squid/rules.patch
 
 # build the package
 # @TODO to test RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc
-RUN cd squid-${SQUID_VER} && dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo)
+RUN cd squid-${SQUID_VER} 
+RUN dpkg-buildpackage -rfakeroot -b -us -uc -j$(awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo)
 
 
 FROM debian:buster-slim AS squid-runcontainer
@@ -97,16 +97,13 @@ fi
 ENV SQUID_VER="4.10"
 ENV SQUID_PKG="${SQUID_VER}-1"
 
-
 COPY --from=squid_install /squid-common_${SQUID_PKG}_all.deb /tmp
 COPY --from=squid_install /squid_${SQUID_PKG}_${ARCH}.deb /tmp
 COPY --from=squid_install /squidclient_${SQUID_PKG}_${ARCH}.deb  /tmp
 
-
-
 # install squid packages
-RUN apt-get update \
-&& apt-get -y install \
+RUN apt-get -y -qq update \
+&& apt-get -y -qq --no-install-recommends install \
     libcppunit-dev \
     libsasl2-dev \
     libxml2-dev \

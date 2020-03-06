@@ -197,6 +197,16 @@ https://github.com/OSGeo/gdal/blob/26342f736f38fd5c7ba8b63fcfe9d29648d67035/gdal
 docker create -v /mnt/ccache:/ccache --name ccache debian:buster-slim
 ```
 
+```bash
+#
+export docker_buildkit=1; docker build --no-cache --build-arg ARCH=$ARCH .
+
+# with tag
+export docker_buildkit=1; docker build --tag docker-squid-transparent --no-cache --build-arg ARCH=$ARCH .
+
+```
+
+
 
 ## grep and awk
 
