@@ -120,6 +120,7 @@ fi
 
 ENV SQUID_VER="4.10"
 ENV SQUID_PKG="${SQUID_VER}-1"
+ENV ARCH=${ARCH}
 
 COPY --from=squid_install /squid-common_${SQUID_PKG}_all.deb /tmp
 COPY --from=squid_install /squid_${SQUID_PKG}_${ARCH}.deb /tmp
@@ -146,6 +147,7 @@ RUN apt-get -y -qq update \
     libltdl7 \
     logrotate \
     lsb-base \
+    netbase \
 && apt-get install squid-langpack
 RUN dpkg --install /tmp/squid-common_${SQUID_PKG}_all.deb 
 RUN dpkg --install /tmp/squid_${SQUID_PKG}_${ARCH}.deb 
